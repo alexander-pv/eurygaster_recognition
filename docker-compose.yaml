@@ -1,0 +1,106 @@
+version: "3.9"
+
+networks:
+  eurygaster:
+    name: eurygaster
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SUBNET}/${MASK}
+          gateway: ${GATEWAY}
+
+volumes:
+  prometheus_data:
+  rabbitmq_data:
+
+
+services:
+
+  eurygaster-svc:
+    image: alrdockerhub/eurygaster-svc:${SVC_TAG}
+    environment:
+      RMQ_ADDR: ${RMQ_ADDR}
+      RMQ_TOPIC: ${RMQ_TOPIC}
+    ports:
+      - "3000:3000"
+    networks:
+      - eurygaster
+    restart: on-failure
+
+  eurygaster-webpage:
+    image: alrdockerhub/eurygaster-webpage:${WEBPAGE_TAG}
+    environment:
+      GLITCHTIP_DSN: ${GLITCHTIP_DSN}
+      GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
+      AUTH_URL: ${AUTH_URL}
+      AUTH_REALM: ${AUTH_REALM}
+      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+    ports:
+      - "4452:4452"
+    networks:
+      eurygaster:
+        ipv4_address: ${WEBPAGE_IPV4}
+    restart: on-failure
+    depends_on:
+      - eurygaster-svc
+
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_TAG}
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - eurygaster
+    restart: on-failure
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_TAG}
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+    depends_on:
+      - prometheus
+    ports:
+      - "3001:3000"
+    networks:
+      - eurygaster
+    user: "0"
+    restart: on-failure
+
+  rabbitmq:
+    image: rabbitmq:${RMQ_TAG}
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PWD}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 1147483648
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - eurygaster
+    restart: always
+
+  queue_handler:
+    image: alrdockerhub/eurygaster-queue_handler:${QUEUE_HANDLER_TAG}
+    environment:
+      LOGURU_LEVEL: DEBUG
+      LOGURU_INIT: 1
+      RMQ_ADDR: ${RMQ_ADDR}
+      RMQ_TOPIC: NewImages
+      STORAGE_TYPE: minio
+      MINIO_ADDR: ${MINIO_ADDR}
+      MINIO_ACCESS_KEY: ${MINIO_USER}
+      MINIO_SECRET_KEY: ${MINIO_PASSWORD}
+      GLITCHTIP_DSN: ${GLITCHTIP_DSN}
+      GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
+    networks:
+      - eurygaster
+    restart: always
+    depends_on:
+      - rabbitmq

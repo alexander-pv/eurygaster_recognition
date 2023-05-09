@@ -1,0 +1,517 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PFD4B28DF961E4B38"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "expr": "rate(bentoml_api_server_request_total{service_name=\"eurygaster\", endpoint=\"/classify_image\"}[1m])",
+          "hide": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "rate(bentoml_api_server_request_total{service_name=\"eurygaster\", endpoint=\"/classify_eurygaster\"}[1m])",
+          "hide": false,
+          "instant": false,
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "average_requests_per_sec",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PFD4B28DF961E4B38"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 10,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "8.5.22",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "bentoml_api_server_request_in_progress{service_name=\"eurygaster\", endpoint=\"/classify_eurygaster\"}",
+          "legendFormat": "/classify_eurygaster",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "bentoml_api_server_request_in_progress{service_name=\"eurygaster\", endpoint=\"/classify_image\"}",
+          "hide": false,
+          "legendFormat": "/classify_image",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "requests_in_progress",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PFD4B28DF961E4B38"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 15,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "8.5.22",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "bentoml_runner_request_in_progress{service_name=\"eurygaster\", endpoint=\"/run\", runner_name=\"eurygaster_binary_calib_dyn\"}",
+          "legendFormat": "Image filter",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "bentoml_runner_request_in_progress{service_name=\"eurygaster\", endpoint=\"/run\", runner_name=\"eurygaster_multiclass_calib_dyn\"}",
+          "hide": false,
+          "legendFormat": "Eurygaster classifier",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "runner_in_progress",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PFD4B28DF961E4B38"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 10,
+        "y": 5
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.22",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.5, rate(bentoml_runner_adaptive_batch_size_bucket{service_name=\"eurygaster\", runner_name=\"eurygaster_binary_calib_dyn\"}[1m]))",
+          "legendFormat": "Image filter",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.5, rate(bentoml_runner_adaptive_batch_size_bucket{service_name=\"eurygaster\", runner_name=\"eurygaster_multiclass_calib_dyn\"}[1m]))",
+          "hide": false,
+          "legendFormat": "Eurygaster classifier",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "median_adaptive_batch",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PFD4B28DF961E4B38"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 6,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.99, rate(bentoml_api_server_request_duration_seconds_bucket{service_name=\"eurygaster\", endpoint=\"/classify_image\"}[1m]))",
+          "legendFormat": "Image filter",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.99, rate(bentoml_api_server_request_duration_seconds_bucket{service_name=\"eurygaster\", endpoint=\"/classify_eurygaster\"}[1m]))",
+          "hide": false,
+          "legendFormat": "Eurygaster classifier",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PFD4B28DF961E4B38"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.99, rate(bentoml_api_server_request_duration_seconds_bucket{service_name=\"eurygaster\", endpoint=\"/metadata\"}[1m]))",
+          "hide": false,
+          "legendFormat": "Metadata",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "average_requests_duration, sec",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "eurygaster-deploy-dev",
+  "uid": "3r7rnHP4z",
+  "version": 1,
+  "weekStart": ""
+}

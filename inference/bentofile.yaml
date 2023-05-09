@@ -1,0 +1,20 @@
+service: "service:erg"  # Same as the argument passed to `bentoml serve`
+labels:
+  owner: alexander-pv
+  stage: prod
+include:
+  - "service.py"  # A pattern for matching which files to include in the bento
+  - "publisher.py"
+python:
+  packages: # Additional pip packages required by the service
+    - numpy==1.24.2
+    - Pillow==9.5.0
+    - fastapi==0.75.0
+    - onnx==1.13.1
+    - onnxruntime-gpu==1.14.1
+    - pyarrow==11.0.0
+    - aio_pika==9.0.5
+    - nest_asyncio==1.5.6
+docker:
+    distro: debian
+    python_version: "3.10"

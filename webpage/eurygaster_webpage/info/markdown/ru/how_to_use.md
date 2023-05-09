@@ -13,7 +13,7 @@ __Getting accurate recognition__.
 Для быстрой загрузки и оптимальной скорости определения, пожалуйста, загружайте фотографии со следующими параметрами:
 размер от 1000 до 3000 px по длинной стороне, формат JPEG, JPG с качеством 8-10 (условные единицы для Photoshop).
 
-![Alt Text](https://github.com/alexander-pv/eurygaster_app/releases/download/v1.2.1/example_app.gif)
+![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)
 
 <left>
 Copyright:<br/>

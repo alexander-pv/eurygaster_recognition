@@ -55,10 +55,11 @@ def main():
     with st.spinner(f"Loading {selection} ..."):
         logger.debug(f"id_broker.is_authenticated: {st.session_state.is_authenticated}, selection: {selection}")
         can_render = st.session_state.is_authenticated or selection == "Login"
+        st.write(f"Account: {st.session_state.account_name}")
         if can_render:
             selected_page.write(lang=selected_lang)
         else:
-            st.info('You need to login to proceed')
+            st.info('Not signed in. You need to login to proceed')
 
 
 if __name__ == "__main__":

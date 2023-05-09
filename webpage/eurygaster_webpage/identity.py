@@ -14,14 +14,15 @@ class IdentityBroker:
         self.auth_client = os.getenv("AUTH_CLIENT_ID", None)
         self.kc_openid = None
         self.kc_auth = None
-        self.account_name = "unknown"
         if "is_authenticated" not in st.session_state:
             st.session_state.is_authenticated = False
+        if "account_name" not in st.session_state:
+            st.session_state.account_name = "not signed in"
 
     def _reset(self) -> None:
         self.kc_auth = None
         self.kc_openid = None
-        self.account_name = "unknown"
+        st.session_state.account_name = "not signed in"
         st.session_state.is_authenticated = False
 
     def get_auth(self, lang: str) -> Keycloak:
@@ -55,7 +56,7 @@ class IdentityBroker:
                 realm_name=self.auth_realm, verify=False
             )
             st.session_state.is_authenticated = True
-            self.account_name = keycloak.user_info["preferred_username"]
+            st.session_state.account_name = keycloak.user_info["preferred_username"]
             logger.debug(f"Auth object: {keycloak}")
 
     def logout(self) -> None:

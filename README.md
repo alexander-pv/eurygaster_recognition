@@ -50,3 +50,7 @@ $ docker compose --env-file=.env-dev -f docker-compose-gpu.yaml up
 ```bash
 $ make load_test
 ```
+
+#### How to connect GlitchTip to Grafana
+* Add [plugin](https://grafana.com/grafana/plugins/grafana-sentry-datasource/?tab=installation) to `./grafana/plugins/grafana-sentry-datasource`
+* Add auth token according to [integration description](https://glitchtip.com/documentation/integrations)

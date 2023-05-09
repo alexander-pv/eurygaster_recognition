@@ -58,6 +58,7 @@ services:
   grafana:
     image: grafana/grafana:${GRAFANA_TAG}
     volumes:
+      - ./grafana/plugins:/var/lib/grafana/plugins
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/provisioning/:/etc/grafana/provisioning/
       - ./grafana/dashboards/:/var/lib/grafana/dashboards/

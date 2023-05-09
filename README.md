@@ -1,5 +1,15 @@
 ### Eurygaster spp. classification service
 
+ML system schema:
+
+![eurygaster_ml_service](./pics/eurygaster_ml_service.png)
+
+
+Usage:
+
+![login](./pics/web_login.png)
+
+![recognition_example](./pics/recognition_example.gif)
 
 #### How to prepare models cascade with BentoML
 ```bash
@@ -19,7 +29,7 @@ $ bentoml containerize eurygaster:<BENTO_TAG>
 $ make bento_test
 ```
 
-#### How to deploy whole system with Docker compose
+#### How to deploy the system with Docker compose
 ```bash
 # GlitchTip errors monitor
 $ cd glitchtip && docker compose up
@@ -34,6 +44,9 @@ $ docker compose --env-file=.env-dev up
 $ docker compose --env-file=.env-dev up
 ## GPU-supported version
 $ docker compose --env-file=.env-dev -f docker-compose-gpu.yaml up
-# Load testing with locust
+```
+
+#### How to run load tests
+```bash
 $ make load_test
 ```

@@ -11,7 +11,7 @@ __Getting accurate recognition__ 部分。
 為了快速加載和最佳檢測速度，請上傳具有以下參數的照片：
 長邊尺寸從 1000 到 3000 像素，JPEG 格式，JPG 質量為 8-10（Photoshop 的標准單位）。
 
-![替代文字](https://github.com/alexander-pv/eurygaster_app/releases/download/v1.2.1/example_app.gif)
+![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)
 
 
 <left>

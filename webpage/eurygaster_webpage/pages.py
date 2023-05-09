@@ -109,7 +109,7 @@ class LoginPage(Page):
             self.id_broker.get_auth(lang)
             if "is_authenticated" in st.session_state:
                 if st.session_state.is_authenticated:
-                    st.write(f"Welcome, {self.id_broker.account_name}!")
+                    st.write(f"Welcome, {st.session_state.account_name}!")
 
 
 class ModelPage(Page):
@@ -188,9 +188,11 @@ class ModelPage(Page):
             "accept": "application/json",
             "Content-Type": "image/icns",
             "Name": file.name,
+            "Account": st.session_state.account_name
         }
         endpoint = f"{self.backend_address}/{postfix}"
         response = requests.post(endpoint, headers=headers, data=file.getvalue()).json()
+        logger.debug(f"request headers: {headers}")
         logger.debug(f"image_request to {endpoint}:\n{response}")
         return response
 

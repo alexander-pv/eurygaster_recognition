@@ -12,7 +12,7 @@ the __Getting accurate recognition__ section.
 For fast loading and optimal detection speed, please upload photos with the following parameters:
 size from 1000 to 3000 px on the long side, JPEG format, JPG with 8-10 quality (standard units for Photoshop).
 
-![Alt Text](https://github.com/alexander-pv/eurygaster_app/releases/download/v1.2.1/example_app.gif)
+![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)
 
 <left>
 Copyright:<br/>

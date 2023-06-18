@@ -40,7 +40,6 @@ services:
       - ./server.crt.pem:/opt/keycloak/conf/server.crt.pem
       - ./server.key.pem:/opt/keycloak/conf/server.key.pem
     ports:
-      - "8080:8080"
       - "8443:8443"
     networks:
       keycloak:

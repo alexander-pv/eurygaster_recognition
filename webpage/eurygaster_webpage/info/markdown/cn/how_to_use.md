@@ -12,10 +12,3 @@ __Getting accurate recognition__ 部分。
 長邊尺寸從 1000 到 3000 像素，JPEG 格式，JPG 質量為 8-10（Photoshop 的標准單位）。
 
 ![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)
-
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

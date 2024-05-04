@@ -42,9 +42,3 @@ To train models, the authors of the project took specimens images from the colle
 open databases [iNaturalist](www.inaturalist.org) and [MacroID](www.macroid.ru ).
 The images were taken with a professional photosystem as well as a smartphone and a compact camera.
 
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

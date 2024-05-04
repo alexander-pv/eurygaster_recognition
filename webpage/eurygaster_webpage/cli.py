@@ -5,22 +5,28 @@ import os
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="eurygaster webpage argument parser")
     parser.add_argument(
-        "--webpage_port",
+        "--server_port",
         type=int,
         default=int(os.environ.get("EURYGASTER_WEBPAGE_PORT", 4452)),
         help="Webpage port",
     )
     parser.add_argument(
-        "--webpage_ip",
+        "--server_ip",
         type=str,
         default=os.environ.get("EURYGASTER_WEBPAGE_IP", "0.0.0.0"),
         help="Webpage ip",
     )
     parser.add_argument(
+        "--server_max_upload_size",
+        type=int,
+        default=os.environ.get("EURYGASTER_MAX_UPLOAD", 50),
+        help="Max upload size, Mb",
+    )
+    parser.add_argument(
         "--inference_server",
         type=str,
-        default=os.environ.get("INFERENCE_SERVER_ADDRESS", "http://localhost:3000"),
-        help="str, inference server address, default: http://localhost:3000",
+        default=os.environ.get("INFERENCE_SERVER_ADDRESS", "http://127.0.0.1:3000"),
+        help="str, inference server address, default: http://127.0.0.1:3000",
     )
     parser.add_argument(
         "--binary_threshold",

@@ -15,8 +15,3 @@ __Getting accurate recognition__.
 
 ![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)
 
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

@@ -13,9 +13,3 @@ For fast loading and optimal detection speed, please upload photos with the foll
 size from 1000 to 3000 px on the long side, JPEG format, JPG with 8-10 quality (standard units for Photoshop).
 
 ![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

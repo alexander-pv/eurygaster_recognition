@@ -11,7 +11,7 @@ from eurygaster_webpage import utils
 from eurygaster_webpage.info.structures.hints import HINT_MESSAGES, DefaultMsg
 from loguru import logger
 from scipy.special import softmax
-from streamlit.elements.file_uploader import SomeUploadedFiles
+from streamlit.elements.widgets.file_uploader import SomeUploadedFiles
 
 
 class Page(metaclass=ABCMeta):
@@ -42,12 +42,14 @@ class Page(metaclass=ABCMeta):
             text = None
         return text
 
-    def set_title(self) -> None:
+    def set_title(self, title: str = None) -> None:
         """
         Set title for a streamlit page
         :return: None
         """
-        st.write(f"## Eurygaster spp. classification - {self.title}")
+
+        placed_title = title if title is not None else self.title
+        st.write(f"## {placed_title}")
 
     @staticmethod
     def hide_style() -> None:
@@ -104,12 +106,8 @@ class LoginPage(Page):
 
     def write(self, lang: str) -> None:
         with st.spinner(f"Loading {self.title} ..."):
-            self.set_title()
             self.hide_style()
-            self.id_broker.get_auth(lang)
-            if "is_authenticated" in st.session_state:
-                if st.session_state.is_authenticated:
-                    st.write(f"Welcome, {st.session_state.account_name}!")
+            self.id_broker.login(lang)
 
 
 class ModelPage(Page):

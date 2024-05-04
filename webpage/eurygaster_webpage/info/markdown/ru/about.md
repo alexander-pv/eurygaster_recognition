@@ -42,10 +42,3 @@ _E. dilaticollis_ и _E. laeviuscula_ (эти два вида довольно �
 так и на смартфон и компактную фотокамеру).
 Обучающая выборка была расширена изображениями из открытых баз
 [iNaturalist](www.inaturalist.org) и  [MacroID](www.macroid.ru).
-
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

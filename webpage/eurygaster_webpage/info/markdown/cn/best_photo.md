@@ -30,10 +30,3 @@
 * [YouTube.8微距攝影新手誤區](https://www.youtube.com/watch?v=kC733Up_APE)
 * [YouTube.Tips for Great Mobile Macro Photography](https://www.youtube.com/watch?v=16TePwGD7qw)
 * [YouTube.終極移動微距攝影設置](https://www.youtube.com/watch?v=fJApu6yVrFc)
-
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

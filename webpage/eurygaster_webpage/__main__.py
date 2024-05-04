@@ -13,10 +13,12 @@ if __name__ == "__main__":
     )
     webpage_path = os.path.join(ROOT, "page_manager.py")
     command = f"streamlit run {webpage_path} "
-    if args.webpage_port:
-        command += f"--server.port {args.webpage_port} "
-    if args.webpage_ip:
-        command += f"--server.address {args.webpage_ip} "
+    if args.server_port:
+        command += f"--server.port {args.server_port} "
+    if args.server_ip:
+        command += f"--server.address {args.server_ip} "
+    if args.server_max_upload_size:
+        command += f"--server.maxUploadSize {args.server_max_upload_size} "
     command += (
         " -- "
         + f"--inference_server {args.inference_server} "

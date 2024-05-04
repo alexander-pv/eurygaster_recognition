@@ -32,10 +32,3 @@
 * [YouTube.8 Beginner Mistakes in Macro Photography](https://www.youtube.com/watch?v=kC733Up_APE)
 * [YouTube.Tips for Great Mobile Phone Macro Photography](https://www.youtube.com/watch?v=16TePwGD7qw)
 * [YouTube.The Ultimate Mobile Macro Photography Setup](https://www.youtube.com/watch?v=fJApu6yVrFc)
-
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

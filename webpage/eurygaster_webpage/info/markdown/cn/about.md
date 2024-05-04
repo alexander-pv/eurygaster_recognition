@@ -40,10 +40,3 @@ _E。 dilaticollis_ 和 _E。 laeviuscula_（這兩個物種非常罕見（Ку�
 為了訓練模型，該項目的作者從動物研究所的收藏中獲取了標本圖像，並
 打開數據庫 [iNaturalist](www.inaturalist.org) 和 [MacroID](www.macroid.ru )。
 這些照片是用專業的攝影系統以及智能手機和小型相機拍攝的。
-
-
-<left>
-Copyright:<br/>
-© The Zoological Institute RAS (ZISP)<br/>
-© Designed by A. Popkov<br/>
-© Text V. Neimorovets</left>

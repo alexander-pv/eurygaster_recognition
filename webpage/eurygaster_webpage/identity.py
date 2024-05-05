@@ -1,10 +1,11 @@
 import os
+import requests
 
 import streamlit as st
 from urllib.parse import urlencode
 from streamlit.runtime import Runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
-from streamlit_keycloak import login, Keycloak
+from streamlit_keycloak import login
 
 from keycloak import KeycloakOpenID
 from loguru import logger
@@ -44,14 +45,14 @@ class IdentityBroker:
         self.auth_client = os.getenv("AUTH_CLIENT_ID", None)
         self.kc_openid = None
         self.kc_auth = None
-        if "account_name" not in st.session_state:
-            st.session_state.account_name = "not signed in"
+        if "email" not in st.session_state:
+            st.session_state.email = "Unknown"
         if "user_name" not in st.session_state:
             st.session_state.user_name = "Unnamed"
         if "is_authenticated" not in st.session_state:
             st.session_state.is_authenticated = False
 
-    def login(self, lang: str) -> None:
+    def sign_in(self, lang: str) -> None:
         """
         Perform authentication process
         :param lang:
@@ -83,27 +84,17 @@ class IdentityBroker:
             )
             st.session_state.is_authenticated = True
             st.session_state.user_name = keycloak.user_info["name"]
-            st.session_state.account_name = keycloak.user_info["preferred_username"]
+            st.session_state.email = keycloak.user_info["email"]
             st.session_state.keycloak_id_token = keycloak.id_token
             st.session_state.keycloak_user_info = keycloak.user_info
             logger.debug(f"Auth object: {keycloak}")
 
-
-    def logout(self) -> None:
-        self.kc_auth = None
-        self.kc_openid = None
-        st.session_state.account_name = "not signed in"
-        st.session_state.user_name = "Unnamed"
-        st.session_state.is_authenticated = False
-        st.session_state.keycloak_id_token = None
-        st.session_state.keycloak_user_info = None
-
-    def get_logout_link(self, user: str) -> None:
+    def get_sign_out_link(self) -> str or None:
         """
         Perform logout process
         :return: None
         """
-        logout_link = None
+        sign_out_link = None
         if st.session_state.get("keycloak_user_info"):
             params = urlencode(
                 {
@@ -111,6 +102,7 @@ class IdentityBroker:
                     "id_token_hint": st.session_state.keycloak_id_token,
                 }
             )
-            logout_link = f'<a target="_self" href="{self.auth_url}/realms/{self.auth_realm}/protocol/openid-connect/logout?{params}">Logout {user}</a>'
-        logger.debug(f"Logout link: {logout_link}")
-        return logout_link
+            sign_out_link = f'<a target="_self" href="{self.auth_url}/realms/{self.auth_realm}/protocol/openid-connect/logout?{params}">Sign Out</a>'
+        user_info = (st.session_state.email, st.session_state.user_name)
+        logger.debug(f"User:{user_info}\nSignOut link: {sign_out_link}")
+        return sign_out_link

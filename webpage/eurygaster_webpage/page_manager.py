@@ -32,7 +32,12 @@ def display_ui(args: argparse.Namespace, id_broker: IdentityBroker) -> None:
     st.sidebar.title("Navigation")
     with st.sidebar:
         st.write(f"Welcome, {st.session_state.user_name}!")
-        st.markdown(id_broker.get_logout_link(st.session_state.account_name), unsafe_allow_html=True)
+        with st.popover("Account"):
+            st.markdown(f"User: {st.session_state.user_name}")
+            st.markdown(f"Email: {st.session_state.email}")
+            sign_out_link = id_broker.get_sign_out_link()
+            if sign_out_link:
+                st.markdown(sign_out_link, unsafe_allow_html=True)
         selection = option_menu(None, list(pages.keys()), menu_icon="cast", default_index=0)
 
     selected_page = pages[selection]

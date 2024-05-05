@@ -107,7 +107,7 @@ class LoginPage(Page):
     def write(self, lang: str) -> None:
         with st.spinner(f"Loading {self.title} ..."):
             self.hide_style()
-            self.id_broker.login(lang)
+            self.id_broker.sign_in(lang)
 
 
 class ModelPage(Page):
@@ -186,7 +186,7 @@ class ModelPage(Page):
             "accept": "application/json",
             "Content-Type": "image/icns",
             "Name": file.name,
-            "Account": st.session_state.account_name
+            "Account": st.session_state.email
         }
         endpoint = f"{self.backend_address}/{postfix}"
         response = requests.post(endpoint, headers=headers, data=file.getvalue()).json()

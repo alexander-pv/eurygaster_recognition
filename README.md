@@ -29,21 +29,18 @@ $ bentoml containerize eurygaster:<BENTO_TAG>
 $ make bento_test
 ```
 
-#### How to deploy the system with Docker compose
+#### How to deploy the system
+
+
 ```bash
-# GlitchTip errors monitor
-$ cd glitchtip && docker compose up
-# Images storage
-$ cd storage && docker compose --env-file=.env-dev up
-# Identity provider
-$ cd identity
-$ openssl req -newkey rsa:2048 -nodes -keyout server.key.pem -x509 -days 3650 -out server.crt.pem
-$ docker compose --env-file=.env-dev up
-# Eurygaster service, WebPage, Prometheus, Grafana, RabbitMQ, QueueHandler
-## CPU-only version
-$ docker compose --env-file=.env-dev up
-## GPU-supported version
-$ docker compose --env-file=.env-dev -f docker-compose-gpu.yaml up
+## CPU-supported minimal version
+$ make up_cpu_system_minimal
+## CPU-supported version with error tracking
+$ make up_cpu_system
+## GPU-supported minimal version
+$ make up_gpu_system_minimal
+## GPU-supported version with error tracking
+$ make up_gpu_system
 ```
 
 #### How to run load tests

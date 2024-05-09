@@ -38,7 +38,9 @@ class Normalize:
         :param image: np.array
         :return: np.array
         """
-        image = (image - self.mean) / self.std
+        channels = tuple(range(image.shape[0]))
+        for ch in channels:
+            image[ch] = (image[ch] - self.mean[ch]) / self.std[ch]
         return image
 
 

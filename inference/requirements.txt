@@ -8,3 +8,4 @@ onnxruntime-gpu==1.14.1
 pillow==9.5.0
 Pillow==9.5.0
 pyarrow==11.0.0
+wget==3.2

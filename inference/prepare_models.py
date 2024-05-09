@@ -5,7 +5,7 @@ import sys
 
 import bentoml
 import onnx
-import requests
+import wget
 from loguru import logger
 
 import transform
@@ -50,9 +50,9 @@ def download_weights(download_path: str) -> None:
     name = download_path.split(os.sep)[-1]
     if name not in os.listdir("./"):
         try:
-            r = requests.get(download_path)
-            open(name, "wb").write(r.content)
-            logger.success(f"Downloaded model: {name} from: {download_path}")
+            logger.info(f"Downloading: {download_path}")
+            filename = wget.download(download_path, out=name)
+            logger.success(f"Downloaded model: {filename} from: {download_path}")
         except ConnectionError as e:
             logger.error(f"Failed to download model {name} from  {download_path}.\n{e}")
     else:
@@ -104,7 +104,7 @@ def main() -> None:
     tag = args.tag
     onnx_filenames = args.model_name
     download_path = (
-        f"https://github.com/alexander-pv/eurygaster_app/releases/download/{tag}/"
+        f"https://github.com/alexander-pv/eurygaster_recognition/releases/download/{tag}/"
     )
 
     for onnx_name in onnx_filenames:

@@ -19,6 +19,7 @@ if __name__ == "__main__":
         command += f"--server.address {args.server_ip} "
     if args.server_max_upload_size:
         command += f"--server.maxUploadSize {args.server_max_upload_size} "
+    command += os.getenv("SERVER_ADD_ARGS", "")
     command += (
         " -- "
         + f"--inference_server {args.inference_server} "

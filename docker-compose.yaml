@@ -1,4 +1,3 @@
-version: "3.9"
 
 networks:
   eurygaster:
@@ -35,8 +34,11 @@ services:
       AUTH_URL: ${AUTH_URL}
       AUTH_REALM: ${AUTH_REALM}
       AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
-    ports:
-      - "4452:4452"
+#      SERVER_ADD_ARGS: "--server.enableCORS false --server.headless=true --server.enableXsrfProtection false "
+#    ports:
+#      - "4452:4452"
+    expose:
+      - "4452"
     networks:
       eurygaster:
         ipv4_address: ${WEBPAGE_IPV4}
@@ -44,32 +46,17 @@ services:
     depends_on:
       - eurygaster-svc
 
-  prometheus:
-    image: prom/prometheus:${PROMETHEUS_TAG}
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+  nginx:
+    image: nginx:stable-alpine3.19
     ports:
-      - "9090:9090"
+      - "443:443"
+    volumes:
+      - ./webpage/nginx/webpage.conf:/etc/nginx/conf.d/webpage.conf
+      - ./webpage/nginx/tests/webpage.crt:/secrets/eurygaster-webpage.crt
+      - ./webpage/nginx/tests/webpage.key:/secrets/eurygaster-webpage.key
     networks:
       - eurygaster
-    restart: on-failure
-
-  grafana:
-    image: grafana/grafana:${GRAFANA_TAG}
-    volumes:
-      - ./grafana/plugins:/var/lib/grafana/plugins
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
-    depends_on:
-      - prometheus
-    ports:
-      - "3001:3000"
-    networks:
-      - eurygaster
-    user: "0"
-    restart: on-failure
+    restart: always
 
   rabbitmq:
     image: rabbitmq:${RMQ_TAG}
@@ -105,3 +92,32 @@ services:
     restart: always
     depends_on:
       - rabbitmq
+
+### Use for full monitoring
+
+#  prometheus:
+#    image: prom/prometheus:${PROMETHEUS_TAG}
+#    volumes:
+#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - prometheus_data:/prometheus
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - eurygaster
+#    restart: on-failure
+#
+#  grafana:
+#    image: grafana/grafana:${GRAFANA_TAG}
+#    volumes:
+#      - ./grafana/plugins:/var/lib/grafana/plugins
+#      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+#      - ./grafana/provisioning/:/etc/grafana/provisioning/
+#      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+#    depends_on:
+#      - prometheus
+#    ports:
+#      - "3001:3000"
+#    networks:
+#      - eurygaster
+#    user: "0"
+#    restart: on-failure

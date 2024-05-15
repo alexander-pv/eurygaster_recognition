@@ -2,11 +2,14 @@
 networks:
   eurygaster:
     name: eurygaster
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${SUBNET}/${MASK}
-          gateway: ${GATEWAY}
+#    external: true
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: ${SUBNET}/${MASK}
+#          gateway: ${GATEWAY}
+  keycloak:
+    external: true
 
 volumes:
   prometheus_data:
@@ -34,6 +37,7 @@ services:
       AUTH_URL: ${AUTH_URL}
       AUTH_REALM: ${AUTH_REALM}
       AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+      ENTRIES_SERVER_ADDRESS: ${ENTRIES_SERVER_ADDRESS}
 #      SERVER_ADD_ARGS: "--server.enableCORS false --server.headless=true --server.enableXsrfProtection false "
 #    ports:
 #      - "4452:4452"
@@ -41,10 +45,22 @@ services:
       - "4452"
     networks:
       eurygaster:
-        ipv4_address: ${WEBPAGE_IPV4}
+#        ipv4_address: ${WEBPAGE_IPV4}
     restart: on-failure
     depends_on:
       - eurygaster-svc
+
+  entries_server:
+    image: alrdockerhub/eurygaster-entries:${ENTRIES_TAG}
+    environment:
+      LIMIT_ENTRIES: 30
+      CLEAR_TIMING_MIN: 5
+      SERVER_PORT: ${ENTRIES_PORT}
+    ports:
+#      - "${ENTRIES_PORT}:${ENTRIES_PORT}"
+    networks:
+      - eurygaster
+    restart: always
 
   nginx:
     image: nginx:stable-alpine3.19
@@ -56,6 +72,7 @@ services:
       - ./webpage/nginx/tests/webpage.key:/secrets/eurygaster-webpage.key
     networks:
       - eurygaster
+      - keycloak
     restart: always
 
   rabbitmq:

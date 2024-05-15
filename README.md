@@ -1,6 +1,6 @@
 ### Eurygaster spp. classification service
 
-ML system schema:
+Architecture:
 
 ![eurygaster_ml_service](./pics/eurygaster_ml_service.png)
 

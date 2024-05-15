@@ -45,14 +45,14 @@ up_glitchtip:
 down_glitchtip:
 	docker compose -f "${GLITCHTIP_PATH}/docker-compose.yaml" down
 
-up_cpu_system_minimal: up_cpu_recognition up_storage up_identity
-down_cpu_system_minimal: down_cpu_recognition down_storage down_identity
+up_cpu_system_minimal: up_identity up_cpu_recognition up_storage
+down_cpu_system_minimal: down_identity down_cpu_recognition down_storage
 
-up_cpu_system: up_cpu_recognition up_storage up_identity up_glitchtip
-down_cpu_system: down_cpu_recognition down_storage down_identity down_glitchtip
+up_cpu_system: up_identity up_cpu_recognition up_storage up_glitchtip
+down_cpu_system: down_identity down_cpu_recognition down_storage down_glitchtip
 
-up_gpu_system_minimal: up_gpu_recognition up_storage up_identity
-down_gpu_system_minimal: down_gpu_recognition down_storage down_identity
+up_gpu_system_minimal: up_identity up_gpu_recognition up_storage
+down_gpu_system_minimal: down_identity down_gpu_recognition down_storage
 
-up_gpu_system: up_gpu_recognition up_storage up_identity up_glitchtip
-down_gpu_system: down_gpu_recognition down_storage down_identity down_glitchtip
+up_gpu_system: up_identity up_gpu_recognition up_storage  up_glitchtip
+down_gpu_system: down_identity down_gpu_recognition down_storage  down_glitchtip

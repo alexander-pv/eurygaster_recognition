@@ -52,7 +52,7 @@ class IdentityBroker:
         if "is_authenticated" not in st.session_state:
             st.session_state.is_authenticated = False
 
-    def sign_in(self, lang: str) -> None:
+    def sign_in(self, lang: str) -> bool:
         """
         Perform authentication process
         :param lang:
@@ -88,6 +88,8 @@ class IdentityBroker:
             st.session_state.keycloak_id_token = keycloak.id_token
             st.session_state.keycloak_user_info = keycloak.user_info
             logger.debug(f"Auth object: {keycloak}")
+            return True
+        return False
 
     def get_sign_out_link(self) -> str or None:
         """

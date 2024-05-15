@@ -2,10 +2,14 @@ import os
 from abc import abstractmethod, ABCMeta
 from typing import Optional, Union
 
+import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import requests
 import streamlit as st
+
+from http import HTTPStatus
+
 from eurygaster_webpage import ROOT
 from eurygaster_webpage import utils
 from eurygaster_webpage.info.structures.hints import HINT_MESSAGES, DefaultMsg
@@ -94,33 +98,50 @@ class PlainTextPage(Page):
 
 
 class LoginPage(Page):
-    def __init__(self, id_broker: object, *args, **kwargs):
+    def __init__(self, id_broker: object, entries_address: str, *args, **kwargs):
         """
         Streamlit page with login
         :param id_broker: Identity broker
+        :param entries_address
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self.id_broker = id_broker
+        self.entries_address = entries_address
+
+    def show_entries(self) -> None:
+        response = requests.get(f"{self.entries_address}/get_score/?n=50")
+        if response.status_code == HTTPStatus.OK:
+            df = pd.DataFrame(response.json(), columns=["DateTime", "Score", "Recognized"])
+            if df.shape[0] > 0:
+                st.subheader('Recent images:', divider='rainbow')
+                st.table(df)
+            logger.debug(f"Entry parsed successfully: {response.json()}")
+        else:
+            logger.error(f"Failed to parse entry: {response.status_code, response.text}")
 
     def write(self, lang: str) -> None:
         with st.spinner(f"Loading {self.title} ..."):
             self.hide_style()
-            self.id_broker.sign_in(lang)
+            is_ok = self.id_broker.sign_in(lang)
+            if not is_ok:
+                self.show_entries()
 
 
 class ModelPage(Page):
-    def __init__(self, backend_address: str, binary_threshold: float, *args, **kwargs):
+    def __init__(self, backend_address: str, entries_address: str, binary_threshold: float, *args, **kwargs):
         """
         Streamlit page with models inference
         :param backend_address:
+        :param entries_address
         :param binary_threshold:
         :param args:
         :param kwargs:
         """
         super().__init__(*args, **kwargs)
         self.backend_address = backend_address
+        self.entries_address = entries_address
         self.binary_threshold = binary_threshold
         self._messages = HINT_MESSAGES
         self._download_types = ["jpg", "jpeg"]
@@ -151,6 +172,22 @@ class ModelPage(Page):
     def _update_msg_lang(self, lang: str) -> None:
         self._cur_msg = self._messages.get(lang, DefaultMsg)
 
+    def save_entry(self, score: float, class_name: str) -> None:
+        """
+        :param score:
+        :param class_name:
+        :return:
+        """
+        data = {
+            "score": score,
+            "class_name": class_name
+        }
+        response = requests.post(f"{self.entries_address}/add_score/", json=data)
+        if response.status_code == HTTPStatus.OK:
+            logger.debug(f"Entry added successfully: {response.json()}")
+        else:
+            logger.error(f"Failed to add entry: {response.status_code, response.text}")
+
     def make_barplot(self, details: dict) -> None:
         """
         Make a barplot for confidence values
@@ -169,6 +206,7 @@ class ModelPage(Page):
                 textfont_size=12, textangle=0, textposition="outside", cliponaxis=False
             )
             st.plotly_chart(fig, use_container_width=True)
+            self.save_entry(score=sorted_output[0][1], class_name=sorted_output[0][0])
 
     def insert_picture(self, file: Union[SomeUploadedFiles, None]) -> None:
         if file:

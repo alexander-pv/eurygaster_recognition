@@ -29,6 +29,12 @@ def parse_args() -> argparse.Namespace:
         help="str, inference server address, default: http://127.0.0.1:3000",
     )
     parser.add_argument(
+        "--entries_server",
+        type=str,
+        default=os.environ.get("ENTRIES_SERVER_ADDRESS", "http://entries_server:8884"),
+        help="str, entries server address, default: http://entries_server:8884",
+    )
+    parser.add_argument(
         "--binary_threshold",
         type=float,
         default=0.5,

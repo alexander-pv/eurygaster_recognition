@@ -1,4 +1,4 @@
-version: "3.9"
+
 x-environment:
   &default-environment
   DATABASE_URL: postgres://postgres:password@postgres:5432/postgres
@@ -54,7 +54,6 @@ services:
       - uploads:/code/uploads
     networks:
       eurygaster:
-        ipv4_address: 172.55.0.6
 
   gtworker:
     image: glitchtip/glitchtip:v3.1.3

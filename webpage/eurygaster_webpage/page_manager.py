@@ -25,6 +25,7 @@ def display_ui(args: argparse.Namespace, id_broker: IdentityBroker) -> None:
         "Identify Eurygaster": ModelPage(
             title="Identify Eurygaster",
             backend_address=args.inference_server,
+            entries_address=args.entries_server,
             binary_threshold=args.binary_threshold,
         ),
     }
@@ -77,9 +78,8 @@ def main() -> None:
 
     if not st.session_state.is_authenticated:
         st.write("## Eurygaster spp. classification")
-        login_page = LoginPage(title="Sign In", id_broker=id_broker)
+        login_page = LoginPage(title="Sign In", id_broker=id_broker, entries_address=args.entries_server)
         login_page.write(lang="en")
-
     try:
         if st.session_state.is_authenticated:
             display_ui(args, id_broker)

@@ -1,0 +1,4 @@
+inference/tests/eurygaster_testudinaria.jpeg filter=lfs diff=lfs merge=lfs -text
+pics/eurygaster_ml_service.png filter=lfs diff=lfs merge=lfs -text
+pics/recognition_example.gif filter=lfs diff=lfs merge=lfs -text
+pics/web_login.png filter=lfs diff=lfs merge=lfs -text

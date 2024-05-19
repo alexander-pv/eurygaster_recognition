@@ -1,1 +1,0 @@
-web: sh setup.sh && cd src; python ./backend/inference_server.py & streamlit run ./front/eurygaster_app.py

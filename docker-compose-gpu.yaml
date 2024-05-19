@@ -1,0 +1,145 @@
+
+networks:
+  eurygaster:
+    name: eurygaster
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SUBNET}/${MASK}
+          gateway: ${GATEWAY}
+
+volumes:
+  prometheus_data:
+  rabbitmq_data:
+
+services:
+
+  eurygaster-svc:
+    image: alrdockerhub/eurygaster-svc:${SVC_TAG_GPU}
+    runtime: nvidia
+    container_name: 'eurygaster-svc'
+    ports:
+      - "3000:3000"
+    networks:
+      - eurygaster
+    restart: on-failure
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      RMQ_ADDR: ${RMQ_ADDR}
+      RMQ_TOPIC: ${RMQ_TOPIC}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: [ '0' ]
+              capabilities: [ gpu ]
+
+  eurygaster-webpage:
+    image: alrdockerhub/eurygaster-webpage:${WEBPAGE_TAG}
+    environment:
+      GLITCHTIP_DSN: ${GLITCHTIP_DSN}
+      GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
+      AUTH_URL: ${AUTH_URL}
+      AUTH_REALM: ${AUTH_REALM}
+      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+      ENTRIES_SERVER_ADDRESS: ${ENTRIES_SERVER_ADDRESS}
+#      SERVER_ADD_ARGS: "--server.enableCORS false --server.headless=true --server.enableXsrfProtection false "
+#    ports:
+#      - "4452:4452"
+    expose:
+      - "4452"
+    networks:
+      eurygaster:
+        ipv4_address: ${WEBPAGE_IPV4}
+    restart: on-failure
+    depends_on:
+      - eurygaster-svc
+
+  entries_server:
+    image: alrdockerhub/eurygaster-entries:${ENTRIES_TAG}
+    environment:
+      LIMIT_ENTRIES: 30
+      CLEAR_TIMING_MIN: 5
+      SERVER_PORT: ${ENTRIES_PORT}
+#    ports:
+#      - "${ENTRIES_PORT}:${ENTRIES_PORT}"
+    networks:
+      - eurygaster
+    restart: always
+
+  nginx:
+    image: nginx:stable-alpine3.19
+    ports:
+      - "443:443"
+    volumes:
+      - ./webpage/nginx/webpage.conf:/etc/nginx/conf.d/webpage.conf
+      - ./webpage/nginx/tests/webpage.crt:/secrets/eurygaster-webpage.crt
+      - ./webpage/nginx/tests/webpage.key:/secrets/eurygaster-webpage.key
+    networks:
+      - eurygaster
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:${RMQ_TAG}
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PWD}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit disk_free_limit 1147483648
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - eurygaster
+    restart: always
+
+  queue_handler:
+    image: alrdockerhub/eurygaster-queue_handler:${QUEUE_HANDLER_TAG}
+    environment:
+      LOGURU_LEVEL: DEBUG
+      LOGURU_INIT: 1
+      RMQ_ADDR: ${RMQ_ADDR}
+      RMQ_TOPIC: NewImages
+      STORAGE_TYPE: minio
+      MINIO_ADDR: ${MINIO_ADDR}
+      MINIO_ACCESS_KEY: ${MINIO_USER}
+      MINIO_SECRET_KEY: ${MINIO_PASSWORD}
+      GLITCHTIP_DSN: ${GLITCHTIP_DSN}
+      GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
+    networks:
+      - eurygaster
+    restart: always
+    depends_on:
+      - rabbitmq
+
+### Use for full monitoring
+
+#  prometheus:
+#    image: prom/prometheus:${PROMETHEUS_TAG}
+#    volumes:
+#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - prometheus_data:/prometheus
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - eurygaster
+#    restart: on-failure
+#
+#  grafana:
+#    image: grafana/grafana:${GRAFANA_TAG}
+#    volumes:
+#      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+#      - ./grafana/provisioning/:/etc/grafana/provisioning/
+#      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+#    depends_on:
+#      - prometheus
+#    ports:
+#      - "3001:3000"
+#    networks:
+#      - eurygaster
+#    user: "0"
+#    restart: on-failure

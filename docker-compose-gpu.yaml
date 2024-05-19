@@ -63,7 +63,7 @@ services:
       LIMIT_ENTRIES: 30
       CLEAR_TIMING_MIN: 5
       SERVER_PORT: ${ENTRIES_PORT}
-    ports:
+#    ports:
 #      - "${ENTRIES_PORT}:${ENTRIES_PORT}"
     networks:
       - eurygaster

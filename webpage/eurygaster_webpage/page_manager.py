@@ -77,7 +77,7 @@ def main() -> None:
     )
 
     if not st.session_state.is_authenticated:
-        st.write("## Eurygaster spp. classification")
+        st.write("## _Eurygaster_ spp. classification")
         login_page = LoginPage(title="Sign In", id_broker=id_broker, entries_address=args.entries_server)
         login_page.write(lang="en")
     try:

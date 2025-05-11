@@ -4,10 +4,10 @@
 		up_cpu_system_minimal down_cpu_system_minimal up_cpu_system down_cpu_system \
 		up_gpu_system_minimal down_gpu_system_minimal up_gpu_system down_gpu_system
 
-ENV_FILE=.env-dev
-STORAGE_PATH=./storage
-IDENTITY_PATH=./identity
-GLITCHTIP_PATH=./glitchtip
+ENV_FILE ?= .env-dev
+STORAGE_PATH ?= ./storage
+IDENTITY_PATH ?= ./identity
+GLITCHTIP_PATH ?= ./glitchtip
 
 load_test_req:
 	pip install -r ./inference/tests/locustfiles/requirements.txt

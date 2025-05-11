@@ -40,7 +40,7 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       PROXY_ADDRESS_FORWARDING: "true"
-#      KEYCLOAK_FRONTEND_URL: "https://eurygaster.org/auth"
+#      KEYCLOAK_FRONTEND_URL: "https://eurygaster.ru/auth"
     volumes:
       - ./server.crt.pem:/opt/keycloak/conf/server.crt.pem
       - ./server.key.pem:/opt/keycloak/conf/server.key.pem
@@ -56,6 +56,11 @@ services:
     restart: always
     depends_on:
       - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: ${KEYCLOAK_CPUS:-1}
+          memory: ${KEYCLOAK_MEM:-4096M}
 
   postgres:
     image: postgres:${PG_TAG}
@@ -77,3 +82,8 @@ services:
       keycloak:
         ipv4_address: ${PG_IPV4}
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: ${PG_CPUS:-1}
+          memory: ${PG_MEM:-4096M}

@@ -35,6 +35,8 @@ $ make bento_test
 ```bash
 ## CPU-supported minimal version
 $ make up_cpu_system_minimal
+## CPU-supported minimal version with resource limits
+$ make ENV_FILE=.env-limits-dev up_cpu_system_minimal 
 ## CPU-supported version with error tracking
 $ make up_cpu_system
 ## GPU-supported minimal version

@@ -5,6 +5,11 @@ networks:
 
 volumes:
   minio:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=${MINIO_VOLUME_SIZE},uid=1000
 
 services:
   minio:
@@ -21,3 +26,8 @@ services:
     restart: always
     networks:
       - eurygaster
+    deploy:
+      resources:
+        limits:
+          cpus: ${MINIO_CPUS:-1}
+          memory: ${MINIO_MEM:-4096M}

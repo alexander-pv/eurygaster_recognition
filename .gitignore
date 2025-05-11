@@ -56,3 +56,9 @@ Thumbs.db
 
 # Ignore certs
 *.pem
+*.crt
+*.key
+
+# Proxy conf
+*.conf
+

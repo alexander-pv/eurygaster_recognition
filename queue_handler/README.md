@@ -38,5 +38,5 @@ $ STORAGE_TYPE=minio \
 
 
 ### Available storage options:
-* `minio`, allows to send images on MinIO server
+* `minio`, allows to send images to a MinIO server
 * `telegram`, allows to send images via bot to a Telegram group

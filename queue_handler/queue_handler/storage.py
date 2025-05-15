@@ -2,8 +2,9 @@ import dataclasses
 import io
 import os
 from abc import ABC, abstractmethod
-
+import requests
 import boto3
+
 from PIL import Image
 from loguru import logger
 
@@ -62,7 +63,7 @@ class MinIOSaver(StorageSaver):
         else:
             logger.info(f"Bucket: {self.bucket_name} already exists")
 
-    def save(self, image: bytes, name: str) -> None:
+    def save(self, image: Image, name: str) -> None:
         """
         Save image to an object storage
         :param image: image, in bytes
@@ -75,7 +76,48 @@ class MinIOSaver(StorageSaver):
         self._client.upload_fileobj(in_mem, self.bucket_name, name)
 
 
+class TelegramGroupSaver(StorageSaver):
+
+    def __init__(self):
+        """
+        Saver for Telegram group
+        """
+        self.token = os.getenv("TG_BOT_TOKEN", None)
+        self.group_id = os.getenv("TG_GROUP_ID", None)
+        self.url = f"https://api.telegram.org/bot{self.token}/sendPhoto"
+        super().__init__()
+
+    def _create_client(self):
+        pass
+
+    def _prepare_storage(self) -> None:
+        pass
+
+    def save(self, image: Image, name: str) -> None:
+        """
+        Save image to a Telegram group via bot in that group
+        :param image: image, in bytes
+        :param name:  image name, str
+        :return: None
+        """
+        try:
+            with io.BytesIO() as in_mem:
+                image.save(in_mem, format="jpeg")
+                in_mem.seek(0)
+                files = {'photo': (name, in_mem)}
+                data = {
+                    'chat_id': self.group_id,
+                    'caption': f'Received image. Name: {name}'
+                }
+                response = requests.post(self.url, files=files, data=data)
+                response.raise_for_status()
+                logger.info(f"response: {response}")
+        except Exception as e:
+            logger.error(f"Failed to send image {name}: {str(e)}", exc_info=True)
+
+
 @dataclasses.dataclass
 class StorageTypes:
     minio: StorageSaver = MinIOSaver
+    telegram: StorageSaver = TelegramGroupSaver
     empty = None

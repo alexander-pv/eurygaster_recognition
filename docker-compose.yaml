@@ -12,7 +12,7 @@ networks:
     external: true
 
 volumes:
-  prometheus_data:
+#  prometheus_data:
   rabbitmq_data:
 
 
@@ -128,6 +128,8 @@ services:
       MINIO_ADDR: ${MINIO_ADDR}
       MINIO_ACCESS_KEY: ${MINIO_USER}
       MINIO_SECRET_KEY: ${MINIO_PASSWORD}
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN}
+      TG_GROUP_ID: ${TG_GROUP_ID}
       GLITCHTIP_DSN: ${GLITCHTIP_DSN}
       GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
     networks:

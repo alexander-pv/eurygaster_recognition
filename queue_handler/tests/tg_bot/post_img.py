@@ -3,7 +3,7 @@ import os
 import requests
 from loguru import logger
 
-IMAGE_PATH = 'test.png'
+IMAGE_PATH = 'test.jpg'
 
 
 class TelegramGroupSaver:

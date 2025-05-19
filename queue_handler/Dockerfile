@@ -6,4 +6,4 @@ COPY . ./
 RUN pip install .
 WORKDIR /
 RUN rm -rf /workspace
-CMD python -m queue_handler
+CMD ["python", "-m", "queue_handler"]

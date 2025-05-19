@@ -9,7 +9,7 @@ networks:
           gateway: ${GATEWAY}
 
 volumes:
-  prometheus_data:
+#  prometheus_data:
   rabbitmq_data:
 
 services:
@@ -35,6 +35,9 @@ services:
             - driver: nvidia
               device_ids: [ '0' ]
               capabilities: [ gpu ]
+        limits:
+          cpus: ${SVC_CPUS:-1}
+          memory: ${SVC_MEM:-4096M}
 
   eurygaster-webpage:
     image: alrdockerhub/eurygaster-webpage:${WEBPAGE_TAG}
@@ -56,6 +59,11 @@ services:
     restart: on-failure
     depends_on:
       - eurygaster-svc
+    deploy:
+      resources:
+        limits:
+          cpus: ${WEBPAGE_CPUS:-1}
+          memory: ${WEBPAGE_MEM:-4096M}
 
   entries_server:
     image: alrdockerhub/eurygaster-entries:${ENTRIES_TAG}
@@ -68,6 +76,11 @@ services:
     networks:
       - eurygaster
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: ${ENTRIES_CPUS:-1}
+          memory: ${ENTRIES_MEM:-4096M}
 
   nginx:
     image: nginx:stable-alpine3.19
@@ -80,6 +93,11 @@ services:
     networks:
       - eurygaster
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: ${NGINX_CPUS:-1}
+          memory: ${NGINX_MEM:-4096M}
 
   rabbitmq:
     image: rabbitmq:${RMQ_TAG}
@@ -96,6 +114,11 @@ services:
     networks:
       - eurygaster
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: ${RMQ_CPUS:-1}
+          memory: ${RMQ_MEM:-4096M}
 
   queue_handler:
     image: alrdockerhub/eurygaster-queue_handler:${QUEUE_HANDLER_TAG}
@@ -108,6 +131,8 @@ services:
       MINIO_ADDR: ${MINIO_ADDR}
       MINIO_ACCESS_KEY: ${MINIO_USER}
       MINIO_SECRET_KEY: ${MINIO_PASSWORD}
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN}
+      TG_GROUP_ID: ${TG_GROUP_ID}
       GLITCHTIP_DSN: ${GLITCHTIP_DSN}
       GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
     networks:
@@ -115,6 +140,11 @@ services:
     restart: always
     depends_on:
       - rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: ${QUEUE_HANDLER_CPUS:-1}
+          memory: ${QUEUE_HANDLER_MEM:-4096M}
 
 ### Use for full monitoring
 

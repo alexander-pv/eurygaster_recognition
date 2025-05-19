@@ -1,5 +1,9 @@
 ### Eurygaster spp. classification service
 
+
+Welcome to the official repository of **[Eurygaster spp. recognition](https://eurygaster.ru)** app
+
+
 Architecture:
 
 ![eurygaster_ml_service](./pics/eurygaster_ml_service.png)
@@ -33,14 +37,24 @@ $ make bento_test
 
 
 ```bash
+### CPU setups ###
+## CPU-supported minimal version without in-place storage
+$ make up_cpu_system_nano
 ## CPU-supported minimal version
 $ make up_cpu_system_minimal
 ## CPU-supported version with error tracking
 $ make up_cpu_system
+
+### GPU setups ###
+## GPU-supported minimal version without in-place storage
+$ make up_gpu_system_nano
 ## GPU-supported minimal version
 $ make up_gpu_system_minimal
 ## GPU-supported version with error tracking
 $ make up_gpu_system
+
+### Apply resource limits to any setup
+$ make ENV_FILE=.env-limits-dev up_<SETUP_NAME>
 ```
 
 #### How to run load tests

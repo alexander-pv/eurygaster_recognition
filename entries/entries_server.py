@@ -29,7 +29,8 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         score REAL NOT NULL,
         time TEXT NOT NULL,
-        class_name TEXT NOT NULL
+        class_name TEXT NOT NULL,
+        icon_b64 TEXT NOT NULL
     )
     """)
     conn.commit()
@@ -44,17 +45,18 @@ app = FastAPI()
 class ScoreData(BaseModel):
     score: float
     class_name: str
+    icon_b64: str
 
 
 @app.post("/add_score/")
 async def add_score(data: ScoreData):
-    new_etnry = (get_current_time(), data.score, data.class_name)
+    new_entry = (get_current_time(), data.score, data.class_name, data.icon_b64)
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO scores (time, score, class_name) VALUES (?, ?, ?)", new_etnry)
+    cursor.execute("INSERT INTO scores (time, score, class_name, icon_b64) VALUES (?, ?, ?, ?)", new_entry)
     conn.commit()
     conn.close()
-    logger.info(f"Saved new entry: {new_etnry}")
+    logger.info(f"Saved new entry: {new_entry}")
     return {"message": "Score added successfully!"}
 
 
@@ -63,6 +65,16 @@ async def get_recent_scores(n: int):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute("SELECT time, score, class_name FROM scores ORDER BY id DESC LIMIT ?", (n,))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+
+@app.get("/get_icons/")
+async def get_recent_icons(n: int):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT icon_b64 FROM scores ORDER BY id DESC LIMIT ?", (n,))
     rows = cursor.fetchall()
     conn.close()
     return rows

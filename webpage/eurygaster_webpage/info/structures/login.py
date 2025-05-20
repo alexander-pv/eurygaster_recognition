@@ -1,4 +1,17 @@
+import os
+
+from dataclasses import dataclass
 from collections import namedtuple
+
+
+@dataclass
+class LoginPreviewSettings:
+    n_recent_icons: int = int(os.getenv("PREVIEW_N_RECENT", 10))
+    icon_size: int = int(os.getenv("PREVIEW_ICON_SIZE", 100))
+    icon_margin: int = int(os.getenv("PREVIEW_ICON_MARGIN", 10))
+    icon_border: int = int(os.getenv("PREVIEW_ICON_BORDER", 8))
+    speed_sec: int = int(os.getenv("PREVIEW_CAROUSEL_SPEED_SEC", 10))
+
 
 LoginMsg = namedtuple('LoginMsg',
                       'SIGN_IN LABEL_LOGIN ERR_NOPOPUP ERR_POPUPCLOSED ERR_FATAL')

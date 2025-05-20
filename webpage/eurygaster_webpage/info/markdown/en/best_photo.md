@@ -1,6 +1,6 @@
 
 Photos can be taken using any photographing device.
-Restrictions: size __no more than 200 MB__, format __JPEG, JPG__.
+Restrictions: size __no more than 50 MB__, format __JPEG, JPG__.
 
 The highest accuracy of the determination will be achieved if the following conditions are met:
 

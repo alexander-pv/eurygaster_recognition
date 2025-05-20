@@ -13,6 +13,7 @@ from http import HTTPStatus
 from eurygaster_webpage import ROOT
 from eurygaster_webpage import utils
 from eurygaster_webpage.info.structures.hints import HINT_MESSAGES, DefaultMsg
+from eurygaster_webpage.info.structures.login import LoginPreviewSettings
 from loguru import logger
 from scipy.special import softmax
 from streamlit.elements.widgets.file_uploader import SomeUploadedFiles
@@ -109,6 +110,7 @@ class LoginPage(Page):
         super().__init__(*args, **kwargs)
         self.id_broker = id_broker
         self.entries_address = entries_address
+        self.preview_settings = LoginPreviewSettings()
 
     def show_entries(self) -> None:
         response = requests.get(f"{self.entries_address}/get_score/?n=50")
@@ -121,11 +123,65 @@ class LoginPage(Page):
         else:
             logger.error(f"Failed to parse entry: {response.status_code, response.text}")
 
+    def show_previews(self) -> None:
+
+        # Response format in json: [[b64_str], [b64_str],...]
+        response = requests.get(f"{self.entries_address}/get_icons/?n={self.preview_settings.n_recent_icons}")
+        b64_strs = sum(response.json(), [])
+        icons = [f"data:image/png;base64,{b64str}" for b64str in b64_strs]
+
+        carousel_html = f"""
+        <style>
+        @keyframes slide {{
+            0% {{ transform: translateX(0); }}
+            100% {{ transform: translateX(-50%); }}
+        }}
+
+        .carousel-container {{
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            margin: 2rem 0;
+            background: #f0f2f6;
+            padding: 10px 0;
+            border-radius: 15px;
+        }}
+
+        .carousel-track {{
+            display: flex;
+            animation: slide {self.preview_settings.speed_sec}s linear infinite;
+        }}
+
+        .carousel-item {{
+            flex: 0 0 auto;
+            width: {self.preview_settings.icon_size}px;
+            height: {self.preview_settings.icon_size}px;
+            margin: 0 {self.preview_settings.icon_margin}px;
+            border-radius: {self.preview_settings.icon_border}px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }}
+
+        .carousel-item:hover {{
+            transform: scale(1.05);
+            cursor: pointer;
+        }}
+        </style>
+
+        <div class="carousel-container">
+            <div class="carousel-track">
+                {' '.join([f'<img src="{icon}" class="carousel-item">' for icon in icons])}
+            </div>
+        </div>
+        """
+        st.markdown(carousel_html, unsafe_allow_html=True)
+
     def write(self, lang: str) -> None:
         with st.spinner(f"Loading {self.title} ..."):
             self.hide_style()
             is_ok = self.id_broker.sign_in(lang)
             if not is_ok:
+                self.show_previews()
                 self.show_entries()
 
 
@@ -147,6 +203,12 @@ class ModelPage(Page):
         self._download_types = ["jpg", "jpeg"]
         self._details_prec = 3
         self._set_class_mapping()
+        self._recent_entry = {
+            "score": None,
+            "class_name": None,
+            "icon_b64": None,
+        }
+        self._icon_b64_size = int(os.getenv("PREVIEW_ICON_SIZE", 100))
 
     def _get_metadata(self) -> dict:
         """
@@ -172,21 +234,14 @@ class ModelPage(Page):
     def _update_msg_lang(self, lang: str) -> None:
         self._cur_msg = self._messages.get(lang, DefaultMsg)
 
-    def save_entry(self, score: float, class_name: str) -> None:
-        """
-        :param score:
-        :param class_name:
-        :return:
-        """
-        data = {
-            "score": score,
-            "class_name": class_name
-        }
-        response = requests.post(f"{self.entries_address}/add_score/", json=data)
+    def save_entry(self) -> None:
+        response = requests.post(f"{self.entries_address}/add_score/", json=self._recent_entry)
         if response.status_code == HTTPStatus.OK:
             logger.debug(f"Entry added successfully: {response.json()}")
         else:
             logger.error(f"Failed to add entry: {response.status_code, response.text}")
+
+        self._recent_entry.clear()
 
     def make_barplot(self, details: dict) -> None:
         """
@@ -206,12 +261,19 @@ class ModelPage(Page):
                 textfont_size=12, textangle=0, textposition="outside", cliponaxis=False
             )
             st.plotly_chart(fig, use_container_width=True)
-            self.save_entry(score=sorted_output[0][1], class_name=sorted_output[0][0])
+            self._recent_entry.update({
+                "score": sorted_output[0][1],
+                "class_name": sorted_output[0][0],
+            })
+            self.save_entry()
 
     def insert_picture(self, file: Union[SomeUploadedFiles, None]) -> None:
         if file:
             pil_image = utils.open_image(file)
             st.image(pil_image, use_column_width=True)
+            self._recent_entry.update({
+                "icon_b64": utils.image2base64str_icon(pil_image, self._icon_b64_size)
+            })
 
     def image_request(self, postfix: str, file: SomeUploadedFiles) -> dict:
         """

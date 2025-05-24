@@ -13,6 +13,11 @@ class LoginPreviewSettings:
     speed_sec: int = int(os.getenv("PREVIEW_CAROUSEL_SPEED_SEC", 10))
 
 
+@dataclass
+class LoginEntriesSettings:
+    n_recent_rows: int = int(int(os.getenv("ENTRIES_N_RECENT", 5)))
+
+
 LoginMsg = namedtuple('LoginMsg',
                       'SIGN_IN LABEL_LOGIN ERR_NOPOPUP ERR_POPUPCLOSED ERR_FATAL')
 

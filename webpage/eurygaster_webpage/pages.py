@@ -13,7 +13,7 @@ from http import HTTPStatus
 from eurygaster_webpage import ROOT
 from eurygaster_webpage import utils
 from eurygaster_webpage.info.structures.hints import HINT_MESSAGES, DefaultMsg
-from eurygaster_webpage.info.structures.login import LoginPreviewSettings
+from eurygaster_webpage.info.structures.login import LoginPreviewSettings, LoginEntriesSettings
 from loguru import logger
 from scipy.special import softmax
 from streamlit.elements.widgets.file_uploader import SomeUploadedFiles
@@ -111,9 +111,10 @@ class LoginPage(Page):
         self.id_broker = id_broker
         self.entries_address = entries_address
         self.preview_settings = LoginPreviewSettings()
+        self.entries_settings = LoginEntriesSettings()
 
     def show_entries(self) -> None:
-        response = requests.get(f"{self.entries_address}/get_score/?n=50")
+        response = requests.get(f"{self.entries_address}/get_score/?n={self.entries_settings.n_recent_rows}")
         if response.status_code == HTTPStatus.OK:
             df = pd.DataFrame(response.json(), columns=["DateTime", "Score", "Recognized"])
             if df.shape[0] > 0:

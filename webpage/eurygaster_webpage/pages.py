@@ -1,22 +1,19 @@
-import os
-from abc import abstractmethod, ABCMeta
-from typing import Optional, Union
-
-import pandas as pd
 import numpy as np
+import os
+import pandas as pd
 import plotly.graph_objects as go
 import requests
 import streamlit as st
-
-from http import HTTPStatus
-
+from abc import abstractmethod, ABCMeta
 from eurygaster_webpage import ROOT
 from eurygaster_webpage import utils
-from eurygaster_webpage.info.structures.hints import HINT_MESSAGES, DefaultMsg
-from eurygaster_webpage.info.structures.login import LoginPreviewSettings, LoginEntriesSettings
+from eurygaster_webpage.structures.settings import login
+from eurygaster_webpage.structures.translations import hints
+from http import HTTPStatus
 from loguru import logger
 from scipy.special import softmax
 from streamlit.elements.widgets.file_uploader import SomeUploadedFiles
+from typing import Optional, Union
 
 
 class Page(metaclass=ABCMeta):
@@ -28,7 +25,7 @@ class Page(metaclass=ABCMeta):
         """
         self.title = title
         self.markdown_name = markdown_name
-        self.markdown_text = self.load_markdown("en")
+        self.markdown_text = self.load_markdown(st.session_state.lang)
 
     def load_markdown(self, lang: str) -> str:
         """
@@ -37,12 +34,7 @@ class Page(metaclass=ABCMeta):
         :return: str
         """
         if self.markdown_name:
-            with open(
-                    os.path.join(ROOT, "info/markdown", lang, self.markdown_name),
-                    "r",
-                    encoding="utf8",
-            ) as f:
-                text = "".join(f.readlines())
+            text = utils.read_md(ROOT, "info/markdown", lang, self.markdown_name)
         else:
             text = None
         return text
@@ -110,8 +102,8 @@ class LoginPage(Page):
         super().__init__(*args, **kwargs)
         self.id_broker = id_broker
         self.entries_address = entries_address
-        self.preview_settings = LoginPreviewSettings()
-        self.entries_settings = LoginEntriesSettings()
+        self.preview_settings = login.LoginPreviewSettings()
+        self.entries_settings = login.LoginEntriesSettings()
 
     def show_entries(self) -> None:
         response = requests.get(f"{self.entries_address}/get_score/?n={self.entries_settings.n_recent_rows}")
@@ -177,11 +169,16 @@ class LoginPage(Page):
         """
         st.markdown(carousel_html, unsafe_allow_html=True)
 
+    def _is_authenticated(self, lang: str) -> bool:
+        return self.id_broker.sign_in(lang)
+
     def write(self, lang: str) -> None:
         with st.spinner(f"Loading {self.title} ..."):
             self.hide_style()
-            is_ok = self.id_broker.sign_in(lang)
-            if not is_ok:
+            is_auth = self._is_authenticated(lang)
+            if not is_auth:
+                st.write(utils.read_md(ROOT, "info/markdown", lang, "header.md"))
+                st.write(utils.read_md(ROOT, "info/markdown", lang, "welcome.md"))
                 self.show_previews()
                 self.show_entries()
 
@@ -200,7 +197,7 @@ class ModelPage(Page):
         self.backend_address = backend_address
         self.entries_address = entries_address
         self.binary_threshold = binary_threshold
-        self._messages = HINT_MESSAGES
+        self._messages = hints.HINT_MESSAGES
         self._download_types = ["jpg", "jpeg"]
         self._details_prec = 3
         self._set_class_mapping()
@@ -233,7 +230,7 @@ class ModelPage(Page):
         }
 
     def _update_msg_lang(self, lang: str) -> None:
-        self._cur_msg = self._messages.get(lang, DefaultMsg)
+        self._cur_msg = self._messages.get(lang, hints.DefaultMsg)
 
     def save_entry(self) -> None:
         response = requests.post(f"{self.entries_address}/add_score/", json=self._recent_entry)

@@ -41,6 +41,9 @@ services:
 
   eurygaster-webpage:
     image: alrdockerhub/eurygaster-webpage:${WEBPAGE_TAG}
+#    build:
+#      context: ./webpage
+#      dockerfile: ./Dockerfile
     environment:
       GLITCHTIP_DSN: ${GLITCHTIP_DSN}
       GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
@@ -49,6 +52,7 @@ services:
       AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
       ENTRIES_SERVER_ADDRESS: ${ENTRIES_SERVER_ADDRESS}
 #      SERVER_ADD_ARGS: "--server.enableCORS false --server.headless=true --server.enableXsrfProtection false "
+#      DEBUG_PASS_AUTH: ${DEBUG_PASS_AUTH}
 #    ports:
 #      - "4452:4452"
     expose:

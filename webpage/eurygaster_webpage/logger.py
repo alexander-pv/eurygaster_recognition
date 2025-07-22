@@ -56,6 +56,6 @@ def prepare_sentry() -> None:
         sentry_sdk.init(
             dsn=os.getenv("GLITCHTIP_DSN"),
             max_breadcrumbs=int(os.getenv("GLITCHTIP_MAX_BREADCRUMBS", 50)),
-            debug=bool(os.getenv("GLITCHTIP_DEBUG", 1)),
+            debug=bool(os.getenv("GLITCHTIP_DEBUG", 0)),
             traces_sample_rate=float(os.getenv("GLITCHTIP_SR", 1.0)),
         )

@@ -1,15 +1,11 @@
+Using our app is simple. Just upload your photo into the **Identify Eurygaster** tab,
+and you will receive two key insights:
 
-Upload a photo to the suggested window in the __Model__ section. Then, two results of independent models will be displayed:
+* The likelihood that the specimen belongs to the genus Eurygaster ("1.000" = 100%).
+* The likelihood that the specimen belongs to one of the six species commonly found in Russia and Western Asia.
 
-1. The confidence of the specimen to belong to the genus _Eurygaster_ ("1.000" = 100%).
-2. The confidence distribution of the specimen to belong to each of the six species distributed on the territory of Russia
-and neighboring countries.
-
-The accuracy of the definition directly depends on the quality of the image and the angle.
-How to take a photo that can be used to determine the species with the highest accuracy, read in
-the __Getting accurate recognition__ section.
-
-For fast loading and optimal detection speed, please upload photos with the following parameters:
-size from 1000 to 3000 px on the long side, JPEG format, JPG with 8-10 quality (standard units for Photoshop).
+Keep in mind that the accuracy of the identification depends on your photo's quality and the angle you have chosen for
+your shot. If you want to capture a photo that leads to the most accurate species recognition, please consult the
+**Getting accurate recognition** tab.
 
 ![Alt Text](https://github.com/alexander-pv/eurygaster_recognition/releases/download/v1.3.0/recognition_example.gif)

@@ -10,7 +10,7 @@ from streamlit_keycloak import login
 from keycloak import KeycloakOpenID
 from loguru import logger
 
-from eurygaster_webpage.info.structures.login import LOGIN_MESSAGES
+from eurygaster_webpage.structures.translations.login import LOGIN_MESSAGES
 
 
 def _get_session_id():
@@ -104,7 +104,8 @@ class IdentityBroker:
                     "id_token_hint": st.session_state.keycloak_id_token,
                 }
             )
-            sign_out_link = f'<a target="_self" href="{self.auth_url}/realms/{self.auth_realm}/protocol/openid-connect/logout?{params}">Sign Out</a>'
+            show_text = LOGIN_MESSAGES.get(st.session_state.lang).SIGN_OUT
+            sign_out_link = f'<a target="_self" href="{self.auth_url}/realms/{self.auth_realm}/protocol/openid-connect/logout?{params}">{show_text}</a>'
         user_info = (st.session_state.email, st.session_state.user_name)
         logger.debug(f"User:{user_info}\nSignOut link: {sign_out_link}")
         return sign_out_link

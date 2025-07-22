@@ -12,7 +12,7 @@ setup(
         include=[
             "eurygaster_webpage",
             "eurygaster_webpage.info",
-            "eurygaster_webpage.info.structures",
+            "eurygaster_webpage.structures*",
         ]
     ),
     description="Eurygaster spp. recognition webpage",

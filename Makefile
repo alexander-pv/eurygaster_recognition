@@ -1,4 +1,4 @@
-.PHONY: load_test_req, load_test, bento_test \
+.PHONY: lint, typecheck, test, ci, load_test_req, load_test, bento_test \
 		up_cpu_recognition down_cpu_recognition up_gpu_recognition down_gpu_recognition \
 		up_storage down_storage up_identity down_identity up_glitchtip down_glitchtip \
 		up_cpu_system_minimal down_cpu_system_minimal up_cpu_system down_cpu_system \
@@ -20,6 +20,17 @@ bento_test:
 	cd inference && \
 	pip install -r requirements_test.txt && \
 	pytest --verbosity=1 -s
+
+lint:
+	flake8 .
+
+typecheck:
+	mypy .
+
+test:
+	pytest inference/tests queue_handler/tests
+
+ci: lint typecheck test
 
 up_cpu_recognition:
 	docker compose --env-file="${ENV_FILE}" up -d

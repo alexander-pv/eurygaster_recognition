@@ -1,0 +1,18 @@
+[project]
+name = "inference"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "aio-pika>=9.6.1",
+    "bentoml==1.0.16",
+    "fastapi>=0.90.0,<0.94.0",
+    "loguru>=0.7.3",
+    "nest-asyncio>=1.6.0",
+    "onnx>=1.14.0,<1.17",
+    "onnxruntime>=1.14.0,<1.25",
+    "onnxruntime-gpu>=1.14.0,<1.25",
+    "pillow>=10.0.0",
+    "wget>=3.2",
+]

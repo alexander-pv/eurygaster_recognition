@@ -51,6 +51,9 @@ Thumbs.db
 # Models weights
 *.onnx
 
+# BentoML project-local store (inference/bentoml when BENTOML_HOME is set)
+inference/bentoml/
+
 # Pytest
 *.pytest_cache/
 

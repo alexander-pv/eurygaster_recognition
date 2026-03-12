@@ -1,12 +1,12 @@
 import asyncio
 import dataclasses
 import os
+import pickle
 import sys
 from contextlib import asynccontextmanager
 
 import aio_pika
 import numpy as np
-import pyarrow as pa
 from PIL import Image
 from aio_pika.exceptions import AMQPConnectionError
 from aio_pika.queue import AbstractQueue
@@ -15,11 +15,8 @@ from queue_handler.storage import StorageTypes
 
 
 def deserialize(msg: bytes) -> object:
-    """
-    :param msg: bytes
-    :return: deserialized python object
-    """
-    return pa.deserialize(msg)
+    """Deserialize message bytes (pickle; matches inference publisher)."""
+    return pickle.loads(msg)
 
 
 @dataclasses.dataclass
@@ -27,6 +24,8 @@ class QueueMessage:
     image: bytes
     name: str
     shape: tuple
+    user: str | None = None
+    recognition: dict | None = None
 
 
 class QueueHandler:
@@ -94,11 +93,30 @@ class QueueHandler:
         async with queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
-                    msg = QueueMessage(**deserialize(message.body))
-                    logger.info(f"Received message with file: {msg.name}")
+                    body = deserialize(message.body)
+                    if not isinstance(body, dict):
+                        logger.warning(f"Queue message body is not a dict, type={type(body).__name__}")
+                    else:
+                        rec_keys = list((body.get("recognition") or {}).keys())
+                        logger.debug(
+                            f"Queue message keys: {list(body.keys())} | name={body.get('name')!r} | "
+                            f"user={body.get('user')!r} | shape={body.get('shape')!r} | recognition keys={rec_keys!r}"
+                        )
+                    msg = QueueMessage(
+                        image=body["image"],
+                        name=body["name"],
+                        shape=body["shape"],
+                        user=body.get("user"),
+                        recognition=body.get("recognition"),
+                    )
+                    user_display = msg.user if msg.user is not None else "unknown"
+                    logger.info(
+                        f"Received message: name={msg.name!r} user={user_display!r} shape={msg.shape} "
+                        f"recognition_count={len(msg.recognition or {})}"
+                    )
                     arr = np.frombuffer(msg.image, dtype=np.uint8).reshape(msg.shape)
                     img = Image.fromarray(arr, mode="RGB")
-                    self.saver.save(img, msg.name)
+                    self.saver.save(img, msg.name, user=msg.user, recognition=msg.recognition)
                     logger.info(f"Sent to storage: {msg.name}")
 
     def start(self) -> None:

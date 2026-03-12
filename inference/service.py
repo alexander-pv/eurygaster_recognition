@@ -1,11 +1,14 @@
 import logging
 import os
+import uuid
 
 import bentoml
 import numpy as np
 from PIL.Image import Image as PILImage
 from bentoml.io import Image
+from bentoml.io import Multipart
 from bentoml.io import NumpyNdarray
+from bentoml.io import Text
 from fastapi import FastAPI
 
 from publisher import ImgPublisher
@@ -43,6 +46,25 @@ erg.mount_asgi_app(fastapi_app)
 publisher = ImgPublisher()
 
 
+def softmax(logits: np.ndarray) -> np.ndarray:
+    """Convert logits to probabilities (sum to 1)."""
+    x = np.asarray(logits, dtype=np.float64)
+    x = x - np.max(x, axis=-1, keepdims=True)
+    exp_x = np.exp(x)
+    return exp_x / exp_x.sum(axis=-1, keepdims=True)
+
+
+def _get_multiclass_species_scores(probs: np.ndarray) -> dict[str, float]:
+    """Build recognition dict: species name -> probability from class_map and probability vector (1d or row)."""
+    class_map = multiclass_model.info.metadata.get("class_map") or {}
+    index_to_species = {int(k): v for k, v in class_map.items()}
+    p = np.asarray(probs, dtype=np.float64).ravel()
+    return {
+        index_to_species.get(i, f"class_{i}"): round(float(p[i]), 4)
+        for i in range(len(p))
+    }
+
+
 @fastapi_app.get("/metadata")
 def metadata() -> dict:
     return {
@@ -54,26 +76,34 @@ def metadata() -> dict:
 @erg.api(input=Image(), output=NumpyNdarray())
 async def classify_image(image: PILImage) -> np.ndarray:
     """
-    Classify image to detect whether it has Eurygaster in it or not
+    Classify image to detect whether it has Eurygaster in it or not.
     :param image: PILImage
-    :return: class confidence for binary Eurygaster model
+    :return: class probabilities (softmax) for binary Eurygaster model, shape (1, n_classes)
     """
     proc_img = np.expand_dims(preprocessor(image), 0)
     output = await eurygaster_b_runner.async_run(proc_img)
-    return output
+    return softmax(output)
 
 
-@erg.api(input=Image(), output=NumpyNdarray())
-async def classify_eurygaster(image: PILImage) -> np.ndarray:
+@erg.api(
+    input=Multipart(image=Image(), account=Text(), name=Text()),
+    output=NumpyNdarray(),
+)
+async def classify_eurygaster(image: PILImage, account: str, name: str) -> np.ndarray:
     """
-    Classify Eurygaster spp.
-    :param image: PILImage
-    :return: class confidence for multiclass Eurygaster model
+    Classify Eurygaster spp. Account and filename are passed as multipart fields.
+    :param image: PIL Image
+    :param account: user account (name or email)
+    :param name: original filename
+    :return: class probabilities (softmax) for multiclass Eurygaster model, shape (1, n_classes)
     """
-    try:
-        publisher.publish(image, "image.jpg")
-    except Exception as ex:
-        logging.error(f"Unexpected image publisher error:\n{ex}")
+    account = account or "unknown"
+    filename = name or f"{uuid.uuid4()}.jpg"
+
     proc_img = np.expand_dims(preprocessor(image), 0)
     output = await eurygaster_m_runner.async_run(proc_img)
-    return output
+    probs = softmax(output)
+
+    recognition = _get_multiclass_species_scores(probs)
+    publisher.publish(image, filename, user=account, recognition=recognition)
+    return probs

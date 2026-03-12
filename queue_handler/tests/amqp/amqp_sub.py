@@ -1,9 +1,9 @@
 import asyncio
 import dataclasses
+import pickle
 
 import aio_pika
 import numpy as np
-import pyarrow as pa
 from PIL import Image
 
 CONN_STRING = "amqp://user:password@127.0.0.1:5672"
@@ -18,7 +18,7 @@ class RMQMessage:
 
 
 def deserialize(msg: bytes) -> object:
-    return pa.deserialize(msg)
+    return pickle.loads(msg)
 
 
 async def consume_image() -> None:

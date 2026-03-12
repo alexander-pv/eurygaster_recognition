@@ -1,12 +1,11 @@
 import asyncio
 import datetime
+import pickle
 from contextlib import asynccontextmanager
-from io import BytesIO
 from typing import Any
 
 import aio_pika
 import numpy as np
-import pyarrow as pa
 from PIL import Image as PILImage
 
 CONN_STRING = "amqp://user:password@127.0.0.1:5672"
@@ -18,13 +17,7 @@ def pil_to_array(img: PILImage) -> np.ndarray:
 
 
 def serialize(obj: Any) -> bytes:
-    """
-    :param obj:
-    :return:
-    """
-    bytes_io = BytesIO()
-    pa.serialize(obj).write_to(bytes_io)
-    return bytes_io.getbuffer().tobytes()
+    return pickle.dumps(obj, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 class ImgPublisher:

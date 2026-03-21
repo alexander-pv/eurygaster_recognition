@@ -1,43 +1,29 @@
 ### Eurygaster spp. classification service
 
+Welcome to the official repository of **[Eurygaster spp. recognition](https://eurygaster.ru)** app.
 
-Welcome to the official repository of **[Eurygaster spp. recognition](https://eurygaster.ru)** app
+Service and frontend source code lives under **`src/`**. Layout of the main modules:
 
-
-Architecture:
-
-![eurygaster_ml_service](./pics/eurygaster_ml_service.png)
-
-
-Usage:
-
-![login](./pics/web_login.png)
-
-![recognition_example](./pics/recognition_example.gif)
-
-#### How to prepare models cascade with BentoML
-```bash
-# Load models into BentoML
-$ python prepare_models.py \
-  --tag v1.3.0 \
-  --model_name \
-    model_0d03affcc3fe4555217e01aee7d73fed7ebdf35a_binary_calib_dyn.onnx \
-    model_4fa9730aef422d53cf1ccb3db93da78d68991301_multiclass_calib_dyn.onnx
-
-# Prepare inference service
-$ bentoml build  # Standard BentoML service
-$ bentoml build -f bentofile-gpu.yaml # BentoML service with GPU support
-$ bentoml containerize eurygaster:<BENTO_TAG>
-
-# Test models with BentoML
-$ make bento_test
+```text
+src/
+├── entries/           # Recent-entries HTTP API 
+├── identity/          # Authorization
+├── inference/         # Model infernece service
+├── nginx/             # TLS / reverse-proxy configs for the public edge
+├── queue_handler/     # RabbitMQ consumer → object storage / Telegram
+├── storage/           # MinIO stack
+└── webpage_v2/        # React + TypeScript web app
+    ├── public/        # Static assets, markdown content
+    └── src/           # Application source (pages, components, services)
 ```
 
-#### How to deploy the system
+* Architecture: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+* Models preparation: [src/inference/README.md](./src/inference/README.md)
+
+#### System deployment
 
 
 ```bash
-### CPU setups ###
 ## CPU-supported minimal version without in-place storage
 $ make up_cpu_system_nano
 ## CPU-supported minimal version
@@ -45,23 +31,11 @@ $ make up_cpu_system_minimal
 ## CPU-supported version with error tracking
 $ make up_cpu_system
 
-### GPU setups ###
-## GPU-supported minimal version without in-place storage
-$ make up_gpu_system_nano
-## GPU-supported minimal version
-$ make up_gpu_system_minimal
-## GPU-supported version with error tracking
-$ make up_gpu_system
-
 ### Apply resource limits to any setup
 $ make ENV_FILE=.env-limits-dev up_<SETUP_NAME>
 ```
 
-#### How to run load tests
-```bash
-$ make load_test
-```
+Application:
 
-#### How to connect GlitchTip to Grafana
-* Add [plugin](https://grafana.com/grafana/plugins/grafana-sentry-datasource/?tab=installation) to `./grafana/plugins/grafana-sentry-datasource`
-* Add auth token according to [integration description](https://glitchtip.com/documentation/integrations)
+![login](./pics/recognition_example.png)
+

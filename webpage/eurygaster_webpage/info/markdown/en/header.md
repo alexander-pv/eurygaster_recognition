@@ -1,1 +1,0 @@
-### Automatic Recognition of Sunn Pest Species (genus Eurygaster) Using Machine Learning

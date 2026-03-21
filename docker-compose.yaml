@@ -12,8 +12,8 @@ networks:
     external: true
 
 volumes:
-#  prometheus_data:
   rabbitmq_data:
+  entries_data:
 
 
 services:
@@ -35,26 +35,24 @@ services:
           memory: ${SVC_MEM:-4096M}
 
   eurygaster-webpage:
-    image: alrdockerhub/eurygaster-webpage:${WEBPAGE_TAG}
-#    build:
-#      context: ./webpage
-#      dockerfile: ./Dockerfile
-    environment:
-      GLITCHTIP_DSN: ${GLITCHTIP_DSN}
-      GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
-      AUTH_URL: ${AUTH_URL}
-      AUTH_REALM: ${AUTH_REALM}
-      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
-      ENTRIES_SERVER_ADDRESS: ${ENTRIES_SERVER_ADDRESS}
-#      SERVER_ADD_ARGS: "--server.enableCORS false --server.headless=true --server.enableXsrfProtection false "
-#      DEBUG_PASS_AUTH: ${DEBUG_PASS_AUTH}
-#    ports:
-#      - "4452:4452"
+    image: alrdockerhub/eurygaster-webpage-v2:${WEBPAGE_TAG}
+    # build:
+    #   context: ./src/webpage_v2
+    #   dockerfile: Dockerfile
+    #   args:
+    #     VITE_INFERENCE_SERVER_ADDRESS: ${SVC_INFERENCE_ADDRESS}
+    #     VITE_ENTRIES_SERVER_ADDRESS: ${ENTRIES_SERVER_ADDRESS}
+    #     VITE_BINARY_THRESHOLD: ${BINARY_THRESHOLD:-0.5}
+    #     VITE_AUTH_URL: ${AUTH_URL}
+    #     VITE_AUTH_REALM: ${AUTH_REALM}
+    #     VITE_AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+    volumes:
+      - ./src/webpage_v2/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./src/webpage_v2/public/image:/usr/share/nginx/html/image:ro
     expose:
       - "4452"
     networks:
       eurygaster:
-#        ipv4_address: ${WEBPAGE_IPV4}
     restart: on-failure
     depends_on:
       - eurygaster-svc
@@ -64,15 +62,17 @@ services:
           cpus: ${WEBPAGE_CPUS:-1}
           memory: ${WEBPAGE_MEM:-4096M}
 
-
   entries_server:
     image: alrdockerhub/eurygaster-entries:${ENTRIES_TAG}
     environment:
+      ENTRIES_DATABASE: /data/entries.db
       LIMIT_ENTRIES: 30
       CLEAR_TIMING_MIN: 5
       SERVER_PORT: ${ENTRIES_PORT}
 #    ports:
 #      - "${ENTRIES_PORT}:${ENTRIES_PORT}"
+    volumes:
+      - entries_data:/data
     networks:
       - eurygaster
     restart: always
@@ -86,10 +86,18 @@ services:
     image: nginx:stable-alpine3.19
     ports:
       - "443:443"
+      - "80:80"   # ACME challenge (certbot)
     volumes:
-      - ./webpage/nginx/webpage.conf:/etc/nginx/conf.d/webpage.conf
-      - ./webpage/nginx/tests/webpage.crt:/secrets/eurygaster-webpage.crt
-      - ./webpage/nginx/tests/webpage.key:/secrets/eurygaster-webpage.key
+      # Production: Let's Encrypt (option 1A: identity on 443, no 8443)
+      - ./src/nginx/webpage_letsencrypt.conf:/etc/nginx/conf.d/webpage_letsencrypt.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot
+      # Local/dev: file-based certs
+      # - ./src/nginx/webpage.conf:/etc/nginx/conf.d/webpage.conf
+      # - ./src/nginx/tests/webpage.crt:/secrets/eurygaster-webpage.crt
+      # - ./src/nginx/tests/webpage.key:/secrets/eurygaster-webpage.key
+      # - ./src/identity/server.crt.pem:/secrets/identity.crt
+      # - ./src/identity/server.key.pem:/secrets/identity.key
     networks:
       - eurygaster
       - keycloak
@@ -128,14 +136,12 @@ services:
       LOGURU_INIT: 1
       RMQ_ADDR: ${RMQ_ADDR}
       RMQ_TOPIC: NewImages
-      STORAGE_TYPE: minio
+      STORAGE_TYPE: telegram # minio, telegram
       MINIO_ADDR: ${MINIO_ADDR}
       MINIO_ACCESS_KEY: ${MINIO_USER}
       MINIO_SECRET_KEY: ${MINIO_PASSWORD}
       TG_BOT_TOKEN: ${TG_BOT_TOKEN}
       TG_GROUP_ID: ${TG_GROUP_ID}
-      GLITCHTIP_DSN: ${GLITCHTIP_DSN}
-      GLITCHTIP_DEBUG: ${GLITCHTIP_DEBUG}
     networks:
       - eurygaster
     restart: always
@@ -146,32 +152,3 @@ services:
         limits:
           cpus: ${QUEUE_HANDLER_CPUS:-1}
           memory: ${QUEUE_HANDLER_MEM:-4096M}
-
-### Use for full monitoring
-
-#  prometheus:
-#    image: prom/prometheus:${PROMETHEUS_TAG}
-#    volumes:
-#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-#      - prometheus_data:/prometheus
-#    ports:
-#      - "9090:9090"
-#    networks:
-#      - eurygaster
-#    restart: on-failure
-#
-#  grafana:
-#    image: grafana/grafana:${GRAFANA_TAG}
-#    volumes:
-#      - ./grafana/plugins:/var/lib/grafana/plugins
-#      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-#      - ./grafana/provisioning/:/etc/grafana/provisioning/
-#      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
-#    depends_on:
-#      - prometheus
-#    ports:
-#      - "3001:3000"
-#    networks:
-#      - eurygaster
-#    user: "0"
-#    restart: on-failure

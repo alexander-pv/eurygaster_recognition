@@ -57,6 +57,7 @@ The application uses environment variables for configuration. Create a `.env` fi
 1. **Install dependencies:**
    ```bash
    cd src/webpage_v2
+   rm -rf node_modules package-lock.json # Clean before install
    npm install
    ```
 2. **Configure environment:**

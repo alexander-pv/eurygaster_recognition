@@ -1,5 +1,6 @@
 import axios, { AxiosError, CancelTokenSource } from 'axios';
 import type { Metadata, Entry, ScoreData, ClassificationResponse, IconsResponse, ScoresResponse } from '../types';
+import { transliterate } from 'transliteration';
 
 // Per-endpoint timeout configuration (in milliseconds)
 const ENDPOINT_TIMEOUTS: Record<string, number> = {
@@ -156,7 +157,7 @@ export class InferenceService {
 
     const headers: Record<string, string> = {
       'Content-Type': file.type || 'image/jpeg',
-      Name: file.name,
+      Name: transliterate(file.name),
       Account: account,
     };
     if (accountName != null && accountName !== '') {
@@ -216,7 +217,7 @@ export class InferenceService {
     }
 
     const formData = new FormData();
-    formData.append('image', file, file.name);
+    formData.append('image', file, transliterate(file.name));
     formData.append('account', (accountName != null && accountName !== '' ? accountName : account) || '');
     formData.append('name', file.name || 'image.jpg');
 
